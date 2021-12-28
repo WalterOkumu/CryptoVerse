@@ -5,20 +5,45 @@ import { Card, Row, Col, Input } from 'antd'
 
 import { useGetCryptosQuery } from '../services/cryptoAPI'
 
-const Cryptocurrencies = () => {
+const Cryptocurrencies = ({ simplified }) => {
 
-  const { data: cryptosList, isFetching } = useGetCryptosQuery()
-  const [cryptos, setCryptos] = useState(cryptosList?.coins)
+  //const count = simplified ? 10 : 100
+
+  let { data: cryptosList, isFetching } = useGetCryptosQuery()
+
+  const [cryptos, setCryptos] = useState([])
+  const [searchTerm, setSearchTerm] = useState('')
+
+  useEffect(() => {
+
+    const filteredData = [...cryptosList?.data?.coins.filter((coin) => coin.name.toLowerCase().includes(searchTerm.toLowerCase()))]
+
+    if ( simplified ) {
+      setCryptos(filteredData.splice(0, 10))
+    } else {
+      setCryptos(filteredData)
+    }
+
+  }, [cryptosList, searchTerm, simplified])
+
+  if (isFetching) return 'Loading...'
 
   return (
     <>
-      <Row gutters = {[32, 32]} className = 'crypto-card-container'>
+      {
+        !simplified && (
+          <div className = 'search-crypto'>
+            <Input placeholder='Search Cryptocurrency' onChange = {(event) => setSearchTerm(event.target.value)} />
+          </div>
+        )
+      }
+      <Row gutter = {[32, 32]} className = 'crypto-card-container'>
         {
-          cryptos.map((currency) => (
-            <Col key = {currency.id} xs = {24} sm = {12} lg = {6} className = 'crypto-card'>
+          cryptos?.map((currency, index) => (
+            <Col key = {index} xs = {24} sm = {12} lg = {6} className = 'crypto-card'>
               <Link to = {`/crypto/${currency.id}`}>
                 <Card
-                  title = {`${currency.rank}.${currency.name}`}
+                  title = {`${currency.rank}. ${currency.name}`}
                   extra = {<img className = 'crypto-image' src = {currency.iconUrl} alt = {`${currency.rank}.${currency.name}`} />}
                   hoverable
                 >
