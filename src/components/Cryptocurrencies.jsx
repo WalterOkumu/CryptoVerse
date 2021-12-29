@@ -41,7 +41,7 @@ const Cryptocurrencies = ({ simplified }) => {
         {
           cryptos?.map((currency, index) => (
             <Col key = {index} xs = {24} sm = {12} lg = {6} className = 'crypto-card'>
-              <Link to = {`/crypto/${currency.id}`}>
+              <Link to = {`/crypto/${currency.uuid}`}>
                 <Card
                   title = {`${currency.rank}. ${currency.name}`}
                   extra = {<img className = 'crypto-image' src = {currency.iconUrl} alt = {`${currency.rank}.${currency.name}`} />}
